@@ -12,31 +12,35 @@ class ViewController: UIViewController {
   
   @IBOutlet weak var tableView: UITableView!
   
-  
   var tweets = [Tweet]()
 
   override func viewDidLoad() {
     super.viewDidLoad()
-    tableView.dataSource = self
-    tableView.reloadData()
     
-    if let filepath = NSBundle.mainBundle().pathForResource("tweet", ofType: "json") {
-      if let data = NSData(contentsOfFile: filepath) {
-        if let tweets = TweetJSONParser.tweetsFromJSONData(data) {
-          self.tweets = tweets
-        }
-        
+    LoginService.loginForTwitter { (errorDescription, account) -> (Void) in
+      if let errorDescription = errorDescription {
+        //warning
+      }
+      if let account = account {
+        TwitterService.tweetsFromHomeTimeline(account, completionHandler: { (errorDescription, tweets) -> (Void) in
+          if let tweets = tweets {
+            NSOperationQueue.mainQueue().addOperationWithBlock({ () -> Void in
+              self.tweets = tweets
+              self.tableView.reloadData()
+              //what is happening in lines 24-29?
+            }) //i have extra paren here... you don't... does it matter?
+          }
+        })
       }
     }
-
-    // Do any additional setup after loading the view, typically from a nib.
+    tableView.dataSource = self
+    tableView.reloadData()
   }
 
   override func didReceiveMemoryWarning() {
     super.didReceiveMemoryWarning()
     // Dispose of any resources that can be recreated.
   }
-
 
 }
 

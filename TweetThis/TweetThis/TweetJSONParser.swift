@@ -10,7 +10,7 @@ import Foundation
 
 class TweetJSONParser {
   class func tweetsFromJSONData(jsonData : NSData) -> [Tweet]? {
-    
+    //how about all my spaces below... where would you have or not have spaces between lines?
     var error : NSError?
     
     if let rootObject = NSJSONSerialization.JSONObjectWithData(jsonData, options: nil, error: &error) as? [[String : AnyObject]] {
@@ -20,11 +20,10 @@ class TweetJSONParser {
       for tweetObject in rootObject {
         
         if let text = tweetObject["text"] as? String,
-        user = tweetObject["user"] as? [String : AnyObject],
-          id = tweetObject["id"] as? Int
+        user = tweetObject["user"] as? [String : AnyObject]
            {
             println(text)
-            if let username = user["name"] as? String, profileImageURL = user["profile_image_url_https"] as? String {
+            if let username = user["name"] as? String, profileImageURL = user["profile_image_url_https"] as? String, id = user["id_str"] as? String {
               println(username)
               let tweet = Tweet(text: text, username: username, id: id, profileImageURL: profileImageURL)
               tweets.append(tweet)
